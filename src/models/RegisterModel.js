@@ -173,61 +173,36 @@ export function validateForm(data) {
 
 // ── Submissão (integração com API) ─────────────────────────────────────────
 
+import { apiRegister, apiLogin, saveToken } from '../services/api.js'
+
 /**
- * Envia os dados de cadastro para a API.
- * Troque o mock pelo fetch real quando o back-end estiver pronto.
- *
+ * Monta o payload e envia o cadastro para a API.
  * @param {Object} data - Dados validados do formulário
- * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitRegister(data) {
-  // ── Mock: simula latência de rede ──────────────────────────────────────
-  await new Promise((resolve) => setTimeout(resolve, 1500))
+  const telefone = `(${data.phoneDDD}) ${data.phoneNumber}`
 
-  // ── Exemplo de integração real (descomente quando o back estiver pronto)
-  // const response = await fetch('/api/users/register', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     firstName: data.firstName,
-  //     lastName:  data.lastName,
-  //     email:     data.email,
-  //     cpf:       data.cpf.replace(/\D/g, ''),
-  //     birthDate: data.birthDate,
-  //     phone:     `(${data.phoneDDD}) ${data.phoneNumber}`,
-  //     password:  data.password,
-  //     newsletter: data.newsletter,
-  //   }),
-  // })
-  // if (!response.ok) {
-  //   const err = await response.json()
-  //   throw new Error(err.message || 'Erro ao criar conta')
-  // }
-  // return response.json()
-
-  return { success: true, message: 'Conta criada com sucesso!' }
+  return apiRegister({
+    nome:          `${data.firstName} ${data.lastName}`.trim(),
+    email:         data.email,
+    senha:         data.password,
+    telefone,
+    provedor_auth: 'local',
+  })
 }
 
 /**
- * Inicia o fluxo OAuth com Google ou Facebook.
+ * Inicia o fluxo OAuth social para cadastro.
  * Substitua pelo SDK real (Google Identity Services / Facebook Login SDK).
  *
  * @param {'google'|'facebook'} provider
- * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitSocialLogin(provider) {
-  // ── Mock: simula o redirecionamento OAuth ──────────────────────────────
-  await new Promise((resolve) => setTimeout(resolve, 1200))
-
   // ── Exemplo Google (descomente e configure quando o back estiver pronto)
   // google.accounts.id.initialize({
   //   client_id: 'SEU_CLIENT_ID.apps.googleusercontent.com',
-  //   callback: (response) => {
-  //     fetch('/api/auth/google', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ credential: response.credential }),
-  //     })
+  //   callback: async (response) => {
+  //     await apiRegister({ provedor_auth: 'google', token: response.credential })
   //   },
   // })
   // google.accounts.id.prompt()
@@ -235,14 +210,12 @@ export async function submitSocialLogin(provider) {
   // ── Exemplo Facebook (descomente e configure quando o back estiver pronto)
   // FB.login((response) => {
   //   if (response.authResponse) {
-  //     fetch('/api/auth/facebook', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ accessToken: response.authResponse.accessToken }),
-  //     })
+  //     apiRegister({ provedor_auth: 'facebook', token: response.authResponse.accessToken })
   //   }
   // }, { scope: 'public_profile,email' })
 
+  // Mock temporário enquanto o OAuth não está configurado
+  await new Promise((resolve) => setTimeout(resolve, 1000))
   const name = provider === 'google' ? 'Google' : 'Facebook'
-  return { success: true, message: `Cadastro com ${name} realizado com sucesso!` }
+  return { success: true, message: `Cadastro com ${name}: configure o SDK OAuth.` }
 }

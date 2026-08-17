@@ -22,6 +22,8 @@ export const loginValidators = {
   },
 }
 
+import { apiLogin, apiRegister } from '../services/api.js'
+
 /**
  * Valida todos os campos de login.
  * @param {{ email: string, password: string }} data
@@ -40,46 +42,23 @@ export function validateLoginForm(data) {
 }
 
 /**
- * Envia as credenciais para a API.
- * Substitua o mock pelo fetch real quando o back-end estiver pronto.
- *
+ * Autentica o usuário e salva o token JWT no localStorage.
  * @param {{ email: string, password: string }} data
- * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitLogin(data) {
-  // ── Mock ──────────────────────────────────────────────────────────────
-  await new Promise((resolve) => setTimeout(resolve, 1200))
-
-  // ── Integração real (descomente quando o back estiver pronto) ──────────
-  // const response = await fetch('/api/auth/login', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ email: data.email, password: data.password }),
-  // })
-  // if (!response.ok) {
-  //   const err = await response.json()
-  //   throw new Error(err.message || 'E-mail ou senha incorretos')
-  // }
-  // return response.json()
-
-  return { success: true, message: 'Login realizado com sucesso!' }
+  return apiLogin({
+    email: data.email,
+    senha: data.password,
+  })
 }
 
 /**
  * Inicia o fluxo OAuth social para login.
  * @param {'google'|'facebook'} provider
- * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitSocialLogin(provider) {
-  await new Promise((resolve) => setTimeout(resolve, 1200))
-
-  // ── Google (descomente quando pronto) ─────────────────────────────────
-  // google.accounts.id.initialize({ client_id: 'SEU_CLIENT_ID', callback: ... })
-  // google.accounts.id.prompt()
-
-  // ── Facebook (descomente quando pronto) ───────────────────────────────
-  // FB.login((res) => { ... }, { scope: 'public_profile,email' })
-
+  // Mock temporário enquanto o OAuth não está configurado
+  await new Promise((resolve) => setTimeout(resolve, 1000))
   const name = provider === 'google' ? 'Google' : 'Facebook'
-  return { success: true, message: `Login com ${name} realizado com sucesso!` }
+  return { success: true, message: `Login com ${name}: configure o SDK OAuth.` }
 }

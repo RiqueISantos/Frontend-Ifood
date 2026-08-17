@@ -138,8 +138,16 @@ export class RegisterController {
       await submitRegister(data)
       this._view.showToast('Conta criada com sucesso! 🎉', 'success')
       this._view.resetForm()
+      setTimeout(() => this._router.navigate('/login'), 1200)
     } catch (err) {
-      this._view.showToast(err.message || 'Ocorreu um erro. Tente novamente.', 'error')
+      // Trata erros conhecidos do backend
+      const msg = err.message ?? ''
+      if (msg.toLowerCase().includes('email já cadastrado') || msg.toLowerCase().includes('email')) {
+        this._view.showFieldError('email', 'Este e-mail já está cadastrado')
+        document.getElementById('email')?.focus()
+      } else {
+        this._view.showToast(msg || 'Ocorreu um erro. Tente novamente.', 'error')
+      }
     } finally {
       this._view.setSubmitLoading(false)
     }

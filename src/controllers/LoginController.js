@@ -93,11 +93,27 @@ export class LoginController {
     this._view.setSubmitLoading(true)
 
     try {
-      await submitLogin(data)
+      const result = await submitLogin(data)
+
+      // Salva nome para exibir na home (se a API retornar o usuário)
+      if (result.usuario) {
+        localStorage.setItem('ifood_user', JSON.stringify(result.usuario))
+      } else {
+        // Fallback: salva o e-mail como nome até ter a rota de perfil
+        localStorage.setItem('ifood_user', JSON.stringify({ nome: data.email.split('@')[0] }))
+      }
+
       this._view.showToast('Login realizado com sucesso! 🎉', 'success')
-      // TODO: redirecionar para o home quando existir
+      setTimeout(() => this._router.navigate('/home'), 800)
     } catch (err) {
-      this._view.showToast(err.message || 'E-mail ou senha incorretos.', 'error')
+      const msg = err.message ?? ''
+      if (msg.toLowerCase().includes('inválido') || msg.toLowerCase().includes('senha') || msg.toLowerCase().includes('email')) {
+        this._view.showFieldError('login-email', ' ')
+        this._view.showFieldError('login-password', 'E-mail ou senha incorretos')
+        document.getElementById('login-password')?.focus()
+      } else {
+        this._view.showToast(msg || 'Ocorreu um erro. Tente novamente.', 'error')
+      }
     } finally {
       this._view.setSubmitLoading(false)
     }
