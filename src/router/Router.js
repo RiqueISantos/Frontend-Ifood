@@ -22,7 +22,7 @@ export class Router {
   /** Inicia o roteador e resolve a rota atual */
   start() {
     if (!window.location.hash) {
-      window.location.hash = '#/register'
+      window.location.hash = '#/'
     }
     this._resolve()
   }
@@ -35,9 +35,9 @@ export class Router {
   // ── Privado ─────────────────────────────────────────────────────────────
 
   _resolve() {
-    const hash  = window.location.hash || '#/register'
-    const path  = hash.replace('#', '') || '/register'
-    const factory = this._routes[path] ?? this._routes['/register']
+    const hash  = window.location.hash || '#/'
+    const path  = hash.replace('#', '') || '/'
+    const factory = this._routes[path] ?? this._routes['/']
 
     // Destrói o controller anterior se existir
     if (this._current?.destroy) this._current.destroy()

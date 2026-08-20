@@ -130,3 +130,61 @@ export async function apiUpdateUser(data) {
     body: JSON.stringify(data),
   })
 }
+
+// ── Endpoints de verificação de celular (antes do cadastro) ───────────────
+
+/**
+ * Envia código SMS via WhatsApp para um número avulso.
+ * @param {string} telefone - apenas dígitos com DDD, sem +55
+ */
+export async function apiSendSms(telefone) {
+  return request('/usuarios/sms/enviar-numero', {
+    method: 'POST',
+    body: JSON.stringify({ telefone }),
+  })
+}
+
+/**
+ * Verifica o código SMS de um número avulso.
+ * @param {string} telefone
+ * @param {string} codigo - 6 dígitos
+ */
+export async function apiVerifySms(telefone, codigo) {
+  return request('/usuarios/sms/verificar-numero', {
+    method: 'POST',
+    body: JSON.stringify({ telefone, codigo }),
+  })
+}
+
+// ── Endpoints de verificação de e-mail ────────────────────────────────────
+
+/**
+ * Verifica se um e-mail já está cadastrado.
+ * @param {string} email
+ * @returns {Promise<{ existe: boolean }>}
+ */
+export async function apiCheckEmail(email) {
+  return request(`/usuarios/verificar-email/${encodeURIComponent(email)}`)
+}
+
+/**
+ * Reenvia o código de verificação para o e-mail de uma conta já cadastrada.
+ * @param {string} email
+ */
+export async function apiSendEmailCode(email) {
+  return request(`/usuarios/email/reenviar/${encodeURIComponent(email)}`, {
+    method: 'POST',
+  })
+}
+
+/**
+ * Verifica o código de e-mail e ativa a conta.
+ * @param {string} email
+ * @param {string} codigo - 6 dígitos
+ */
+export async function apiVerifyEmailCode(email, codigo) {
+  return request(`/usuarios/email/ativar/${encodeURIComponent(email)}`, {
+    method: 'POST',
+    body: JSON.stringify({ codigo }),
+  })
+}
